@@ -1,14 +1,42 @@
 from tkinter import *
 import requests
 import geocoder
-def set_location():
-    pass
+
 
 def response_weather(weather):
-    pass
+    try:
+        name = weather["name"]
+        descr = weather["weather"][0]["description"]
+        temp = weather["main"]["temp"]
+        final_txt = "City: %s\nConditions: %s\nTemperature (C): %s" % (name, descr, temp)
+    except:
+        final_txt = "The was a problem"
+    return final_txt
+
+
+def set_location():
+    g = geocoder.ip('me')
+    latit, long = g.latlng
+    txt = str(latit) + ', ' + str(long)
+    ntr.insert(END, txt)
+
 
 def get_weather(city):
-    pass
+    weather_key = "3fc7d9656bfbcee25206bc72efa71ae7"
+    url = "https://api.openweathermap.org/data/2.5/weather"
+    if city.isalpha():
+        params = {"APPID": weather_key, "q": city, "units": "metric"}
+        response = requests.get(url, params=params)
+        weather = response.json()
+        lbl["text"] = response_weather(weather)
+    else:
+
+        letit, long = city.split(", ")
+        params = {"APPID": weather_key, "lat": float(letit), "lon": float(long), "units": "metric"}
+        response = requests.get(url, params=params)
+        weather = response.json()
+        lbl["text"] = response_weather(weather)
+
 
 # txt = "api.openweathermap.org/data/2.5/forecast?q={city name},{country code}"
 # key = "3fc7d9656bfbcee25206bc72efa71ae7"
